@@ -52,9 +52,6 @@
             #indicator {
                 background-color: white;
             }
-            .command-help {
-                font-weight: bold;
-            }
             .error {
                 font-weight: bold;
             }
@@ -93,6 +90,24 @@
 
             let pastCommands = [];
             let pastRequests = -1;
+
+            let themes = {
+                hacker: {
+                    textColor: '#00FF00',
+                    backgroundColor: 'black',
+                    indicatorColor: '#00FF00'
+                },
+                powershell: {
+                    textColor: 'white',
+                    backgroundColor: '#000080',
+                    indicatorColor: 'white'
+                },
+                cmd: {
+                    textColor: 'white',
+                    backgroundColor: 'black',
+                    indicatorColor: 'white'
+                }
+            };
 
             const html = document.querySelector('html');
             const versionOutput = document.getElementById('versionOutput');
@@ -255,7 +270,10 @@
                             { name: 'theme [theme]', desc: 'Change the color scheme to preset themes' },
                             { name: 'reset', desc: 'Clear the screen and reset all settings' },
                             { name: 'showtime [true/false]', desc: 'Show or hide the time in the top right corner' },
-                            { name: 'about', desc: 'Learn about this program' }
+                            { name: 'about', desc: 'Learn about this program' },
+                            { name: 'savetheme [theme name]', desc: 'Save the current color scheme as a new theme' },
+                            { name: 'deltheme [theme name]', desc: 'Delete a custom saved theme' },
+                            { name: 'themes', desc: 'List all preset and custom themes' },
                         ];
                         
                         helpCommands.sort((a, b) => a.name.localeCompare(b.name));
@@ -311,31 +329,56 @@
                             output.innerHTML = 'Syntax incorrect<br>Usage: color [text color] [background color]';
                         }
                         break;
+                    case 'themes':
+                        for (let theme in themes) {
+                            output.innerHTML += theme + '<br>';
+                        }
+                        break;
                     case 'theme':
-                        switch (commandOptions[0]) {
-                            case 'hacker':
-                                html.style.color = '#00FF00';
-                                indicator.style.backgroundColor = '#00FF00';
-                                html.style.backgroundColor = 'black';
-                                commandInputArea.style.backgroundColor = 'black';
-                                commandInputArea.style.borderColor = '#00FF00';
+                        if (!commandOptions[0]) {
+                            output.innerHTML = 'Syntax incorrect<br>Usage: theme [theme name]<br>Type "themes" for a list of themes';
+                        } else {
+                            if (themes[commandOptions[0]]) {
+                                html.style.color = themes[commandOptions[0]].textColor;
+                                indicator.style.backgroundColor = themes[commandOptions[0]].indicatorColor;
+                                html.style.backgroundColor = themes[commandOptions[0]].backgroundColor;
+                                commandInputArea.style.backgroundColor = themes[commandOptions[0]].backgroundColor;
+                                commandInputArea.style.borderColor = themes[commandOptions[0]].textColor;
+                            } else {
+                                output.innerHTML = 'Theme not found';
+                            }
+                        }
+                        break;
+                    case 'deltheme':
+                        if (!commandOptions[0]) {
+                            output.innerHTML = 'Syntax incorrect<br>Usage: deltheme [theme name]';
+                        } else {
+                            if (commandOptions[0] === 'hacker' || commandOptions[0] === 'powershell' || commandOptions[0] === 'cmd') {
+                                output.innerHTML = 'Cannot delete preset themes';
                                 break;
-                            case 'powershell':
-                                html.style.color = 'white';
-                                indicator.style.backgroundColor = 'white';
-                                html.style.backgroundColor = '#000080';
-                                commandInputArea.style.backgroundColor = '#000080';
-                                commandInputArea.style.borderColor = 'white';
+                            } else if (themes[commandOptions[0]]) {
+                                delete themes[commandOptions[0]];
+                                output.innerHTML = 'Theme ' + commandOptions[0] + ' deleted';
+                            } else {
+                                output.innerHTML = 'Theme not found';
+                            }
+                        }
+                        break;
+                    case 'savetheme':
+                        if (!commandOptions[0]) {
+                            output.innerHTML = 'Syntax incorrect<br>Usage: savetheme [theme name]';
+                        } else {
+                            if (commandOptions[0] === 'hacker' || commandOptions[0] === 'powershell' || commandOptions[0] === 'cmd') {
+                                output.innerHTML = 'Theme name already exists';
                                 break;
-                            case 'cmd':
-                                html.style.color = 'white';
-                                indicator.style.backgroundColor = 'white';
-                                html.style.backgroundColor = 'black';
-                                commandInputArea.style.backgroundColor = 'black';
-                                commandInputArea.style.borderColor = 'white';
-                                break;
-                        } if (!commandOptions[0]) {
-                            output.innerHTML = 'Syntax incorrect<br>Usage: theme [theme name]<br>Preset names: hacker, powershell, cmd';
+                            } else {
+                                themes[commandOptions[0]] = {
+                                    textColor: getComputedStyle(html).color,
+                                    backgroundColor: getComputedStyle(html).backgroundColor,
+                                    indicatorColor: getComputedStyle(indicator).backgroundColor
+                                };
+                                output.innerHTML = 'Theme saved as ' + commandOptions[0];
+                            }
                         }
                         break;
                     case 'resetcolor':
