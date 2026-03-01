@@ -26,10 +26,9 @@
                 font-size: 24px;
                 padding: 5px 10px;
                 margin: 0;
-                background-color: rgba(0,0,0/*,0.25*/);
+                background-color: rgba(0,0,0);
                 backdrop-filter: blur(5px);
                 border-top: 0.5px solid white;
-                /*border-radius: 30px;*/
                 width: 100%;
             }
             .pastCommandArea {
@@ -37,10 +36,8 @@
                 top: 0px;
                 text-align: left;
                 font-size: 0.5px;
-                /*padding: 2px;*/
                 border: none;
                 width: 90%;
-                /*margin: 5px 5px;*/
             }
             .newOutput {
                 display: inline-block;
@@ -51,15 +48,9 @@
                 border: none;
                 width: 90%;
                 margin: 0px 5px;
-                /*border: 1px solid white;*/
             }
             #indicator {
                 background-color: white;
-                /*font-size: 24px;*/
-                /*border-left: 0.05px solid red;
-                border-bottom: 0.05px solid red;
-                border-right: 0.05px solid lime;
-                border-top: 0.05px solid lime;*/
             }
             .command-help {
                 font-weight: bold;
@@ -86,7 +77,7 @@
     	<p><span class="pastCommandArea"><span></span> <span id="output"></span></span></p>
     	<p id="commandInputArea"><span id="beginInput"></span><span id="activeCommand"></span><span id="commandInput"></span><span id="indicator">E</span></p>
     	<script>
-        	const version = '0.1.0';
+        	const version = '1.0.0-beta.2';
             const newHere = 'New Commands:<br>theme [theme] - Change the color scheme to a preset colors. <br>Preset names: hacker, powershell, cmd.<br>reset - Clear the screen and reset all settings.';
 
             let commandLine = '';
@@ -103,7 +94,6 @@
             let pastCommands = [];
             let pastRequests = -1;
 
-            //var first = true;
             const html = document.querySelector('html');
             const versionOutput = document.getElementById('versionOutput');
             const commandInput = document.getElementById('commandInput');
@@ -195,17 +185,10 @@
                 commandOptions.shift();
                 output.innerHTML = '<span style="font-weight: bold;">' + usrname + input + currentCommand + currentInput + '</span>' + commandLine;
                 newLine();
-                //alert(commandRequest);
-                //alert(commandOption);
-                /*if (commandLine.split(' ')[0] === 'echo') {
-                        //output.innerHTML = commandLine.split(' ')[1];
-                        //alert(commandLine.split(' ')[0]);
-                    }*/
-                    
+                
                 // CHECK FOR ACTIVE COMMANDS
                 if (activeCommand.length !== 0) {
                     runActive();
-                    //return;
                 }
 
                 //COMPLEX COMMANDS
@@ -221,10 +204,6 @@
                         activeCommand.innerHTML = commandLine + currentInput;
                         currentCommand = 'calc';
                         break;
-                    /*case 'falc':
-                        activeCommand.innerHTML = commandLine + activeInput;
-                        currentCommand = 'falc';
-                        break;*/
                     case 'usrname':
                         if (!commandOptions[0]) {
                             output.innerHTML = 'Syntax incorrect<br>Usage: usrname [new username]';
@@ -252,12 +231,6 @@
                         break;
                     case 'AItest':
                         output.innerHTML = 'AI features will come in later updates';
-                        
-                        /*currentInput = activeInput;
-                        activeCommand.innerHTML = commandLine + currentInput;
-                        currentCommand = 'AItest';*/
-                        break;
-                        
                         break;
                     case 'help-me':
                         document.body.style.color = 'black';
@@ -267,33 +240,31 @@
                         document.querySelector('html').style.backgroundColor = 'white';
                         break;
                     case 'help':
-                        output.innerHTML = '<span class="command-help">calc</span> - Perform calculations';
-                        newLine();
-                        //output.innerHTML = '<span class="command-help">falc</span> - Perform false calculations';
-                        //newLine();
-                        //output.innerHTML = '<span class="command-help">AItest-beta#1</span> - Test the 1st beta of an AI made by Ethan Severy';
-                        //newLine();
-                        output.innerHTML = '<span class="command-help">sysinfo</span> - See specifications of current device';
-                        newLine();
-                        output.innerHTML = '<span class="command-help">txt</span> - Repeats whatever you type in the Command Line';
-                        newLine();
-                        output.innerHTML = '<span class="command-help">script</span> - Run Javascript through the Command Line';
-                        newLine();
-                        output.innerHTML = '<span class="command-help">dnt</span> - Display current date and time';
-                        newLine();
-                        output.innerHTML = '<span class="command-help">version</span> - Display the version number of program';
-                        newLine();
-                        output.innerHTML = '<span class="command-help">usrname</span> - Change your username';
-                        newLine();
-                        output.innerHTML = '<span class="command-help">color</span> - Change the color of text and background';
-                        newLine();
-                        output.innerHTML = '<span class="command-help">resetcolor</span> - Reset the colors back to default';
-                        newLine();
-                        output.innerHTML = '<span class="command-help">version</span> - displays the program version';
-                        newLine();
-                        //output.innerHTML = '<span class="command-help">whatsnew</span> - displays what is new in the program';
-                        //newLine();
-                        output.innerHTML = '<span class="command-help">q</span> or <span class="command-help">clear</span> - Clears all output text';
+                        const helpCommands = [
+                            { name: 'calc', desc: 'Perform calculations' },
+                            { name: 'color', desc: 'Change the color of text and background' },
+                            { name: 'dnt', desc: 'Display current date and time' },
+                            { name: 'q/clear', desc: 'Clear all output text' },
+                            { name: 'resetcolor', desc: 'Reset the colors back to default' },
+                            { name: 'script', desc: 'Run Javascript through the Command Line' },
+                            { name: 'sysinfo', desc: 'See specifications of current device' },
+                            { name: 'txt', desc: 'Repeat whatever you type in the Command Line' },
+                            { name: 'usrname', desc: 'Change your username' },
+                            { name: 'version', desc: 'Display the version number of program' },
+                            {name: 'whoami', desc: 'Display your username' },
+                            { name: 'theme', desc: 'Change the color scheme to preset themes' },
+                            { name: 'reset', desc: 'Clear the screen and reset all settings' },
+                            { name: 'showtime', desc: 'Show or hide the time in the top right corner' },
+                            { name: 'about', desc: 'Learn about this program' }
+                        ];
+                        
+                        helpCommands.sort((a, b) => a.name.localeCompare(b.name));
+                        
+                        helpCommands.forEach((cmd, index) => {
+                            const padding = '.'.repeat(Math.max(1, 25 - cmd.name.length));
+                            output.innerHTML = `<span class="command-help">${cmd.name}</span> ${padding} ${cmd.desc}`;
+                            if (index < helpCommands.length - 1) newLine();
+                        });
                         break;
                     case 'sysinfo':
                         output.innerHTML = navigator.userAgent;
@@ -330,12 +301,6 @@
                         commandLine = 'dnt';
                         runCommand();
                         break;
-                    /*case 'update':
-                        loading();
-                        setTimeout(function() {
-                            loading();
-                        }, 200);
-                        break;*/
                     case 'color':
                         html.style.color = commandOptions[0];
                         indicator.style.backgroundColor = commandOptions[0];
@@ -418,18 +383,10 @@
                     output.innerHTML = ans;
                     commandLine = '';
                     commandInput.innerHTML = '';
-                    //newLine();
-                }/* else if (currentCommand === 'falc') {
-                    output.innerHTML = eval(commandLine) + Math.floor(Math.random() * 100);
-                    commandLine = '';
-                    commandInput.innerHTML = '';
-                    //newLine();
-                }*/ else if (currentCommand === 'AItest') {
-                    /*output.innerHTML = 'AI features will come in later updates';*/
+                } else if (currentCommand === 'AItest') {
                     askAI(commandLine);
                     commandLine = '';
                     commandInput.innerHTML = '';
-                    //newLine();
                 } else if (currentCommand === 'script') {
                     output.innerHTML = eval(commandLine);
                     if (output.innerHTML === 'undefined') {
@@ -437,7 +394,6 @@
                     }
                     commandLine = '';
                     commandInput.innerHTML = '';
-                    //newLine();
                 } else if (currentCommand === 'usrname') {
                     activeCommand.innerHTML = '';
                     currentCommand = '';
