@@ -74,7 +74,7 @@
     	<p><span class="pastCommandArea"><span></span> <span id="output"></span></span></p>
     	<p id="commandInputArea"><span id="beginInput"></span><span id="activeCommand"></span><span id="commandInput"></span><span id="indicator">E</span></p>
     	<script>
-        	const version = '1.0.0-beta4';
+        	const version = '1.0.0-RC1';
             const newHere = 'New Commands:<br>theme [theme] - Change the color scheme to a preset colors. <br>Preset names: classic, hacker, powershell, cmd.<br>reset - Clear the screen and reset all settings.';
 
             let commandLine = '';
@@ -191,7 +191,7 @@
 
             function runCommand() {
                 pastCommands.unshift(commandLine);
-                console.log(pastCommands);
+                // Debug: list of previous commands kept for history navigation
 
                 pastRequests = -1;
                 
@@ -201,12 +201,18 @@
                 // Don't echo the prompt when entering interactive modes like calc or script
                 const interactiveModes = ['calc', 'script'];
                 if (!interactiveModes.includes(commandRequest)) {
+                    // leaving any prior active mode when running a normal command
+                    currentCommand = '';
+                    currentInput = '';
+                    activeCommand.innerHTML = '';
+
                     output.innerHTML = '<span style="font-weight: bold;">' + usrname + input + currentCommand + currentInput + '</span>' + commandLine;
                     newLine();
                 }
                 
                 // CHECK FOR ACTIVE COMMANDS
-                if (activeCommand.length !== 0) {
+                // Only run active mode if a command is set (activeCommand element is not relevant)
+                if (currentCommand && currentCommand !== '') {
                     runActive();
                 }
 
@@ -228,7 +234,7 @@
                             output.innerHTML = 'Syntax incorrect<br>Usage: usrname [new username]';
                         } else {
                             usrname = commandOptions[0];
-                            usrname.innerHTML = usrname;
+                            // update display via helper
                             output.innerHTML = 'Username changed to ' + usrname;
                             updateUsrname();
                         }
@@ -333,9 +339,10 @@
                         }
                         break;
                     case 'themes':
-                        for (let theme in themes) {
-                            output.innerHTML += theme + '<br>';
-                        }
+                        // list themes in alphabetical order for easier scanning
+                        Object.keys(themes).sort().forEach(name => {
+                            output.innerHTML += name + '<br>';
+                        });
                         break;
                     case 'theme':
                         if (!commandOptions[0]) {
@@ -440,6 +447,7 @@
                 } else if (currentCommand === 'usrname') {
                     activeCommand.innerHTML = '';
                     currentCommand = '';
+                    currentInput = '';
                     commandInput.innerHTML = '';
                 }
             }
@@ -448,6 +456,7 @@
                     event.preventDefault();
                     activeCommand.innerHTML = '';
                     currentCommand = '';
+                    currentInput = '';
                     commandInput.innerHTML = '';
                     commandLine = '';
                 }
