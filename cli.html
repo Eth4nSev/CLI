@@ -83,21 +83,16 @@
     </style>
 </head>
 <body>
-    <p id="toptext"><span id="time"></span><br>CLI v<span id="versionOutput">1.0.0</span></p>
+    <p id="toptext"><span id="time"></span><br>CLI v<span id="versionOutput"></span></p>
     <p><span class="pastCommandArea"><span></span> <span id="output"></span></span></p>
     <p id="commandInputArea"><span id="beginInput"></span><span id="activeCommand"></span><span id="commandInput"></span><span id="indicator">E</span></p>
     <div id="cmdStyle"></div>
     <script>
-        const version = '1.1';
+        const version = '1.1.1';
 
         let commandLine = '';
         let commandRequest;
-        let commandOption;
-        let processOutput;
-        let pastCommand;
         let ans;
-        let processPercent;
-        let specialCharacter = false;
         let usrname = 'sysUser';
         let currentInput = '';
 
@@ -129,12 +124,7 @@
         const activeCommand = document.getElementById('activeCommand');
         const indicator = document.getElementById('indicator');
         const output = document.getElementById('output');
-        const input = ':~$ '
-        const activeInput = '//#> ';
-        const customMenu = document.getElementById('customMenu');
-        const costumMenuItems = document.querySelectorAll('.customMenuItems');
-        const coordsOutput = document.getElementById('coordsOutput');
-        const cursor = document.getElementById('cursor');
+        const input = ':~$ ';
         const time = document.getElementById('time');
         const beginInput = document.getElementById('beginInput');
         var currentCommand = '';
@@ -148,19 +138,10 @@
             const excludedKeys = ['Tab', 'Control', 'Shift', 'Alt', 'Backspace', 'Enter', 'Meta', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12'  ];
 
             if (!excludedKeys.includes(event.key)) {
-                if (currentCommand === 'calc' && commandLine.length === 0) {
-                if (['+', '-', '*', '/'].includes(event.key)) {
-                    commandLine = String(ans);
-                } else if (event.key === 'r') {
-                    specialCharacter = true;
-                    commandLine = 'Round';
-                }
-                }
-                if (!specialCharacter) commandLine += event.key;
+                commandLine += event.key;
                 commandInput.innerHTML = commandLine;
-                specialCharacter = false;
             }
-             if (event.ctrlKey && event.key === 'Backspace') {
+            if (event.ctrlKey && event.key === 'Backspace') {
                 event.preventDefault();
                 activeCommand.innerHTML = '';
                 currentCommand = '';
@@ -178,7 +159,6 @@
                 commandLine = commandLine.substring(0, commandLine.length - 1);
                 commandInput.innerHTML = commandLine;
             } else if (event.key === 'Enter') {
-                //output.innerHTML = commandLine;
                 runCommand();
             }
         });
@@ -236,22 +216,9 @@
             commandRequest = commandOptions[0];
             commandOptions.shift();
 
-            const interactiveModes = [];
-            if (!interactiveModes.includes(commandRequest)) {
-                currentCommand = '';
-                currentInput = '';
-                activeCommand.innerHTML = '';
+            output.innerHTML = usrname + input + commandLine;
+            newLine();
 
-                output.innerHTML = '<span style="font-weight: bold;">' + usrname + input + currentCommand + currentInput + '</span>' + commandLine;
-                newLine();
-            }
-            
-            // CHECK FOR ACTIVE COMMANDS
-            if (currentCommand && currentCommand !== '') {
-                //runActive();
-            }
-
-            //COMPLEX COMMANDS
             switch (commandRequest) {
                 case 'q':
                     clear();
@@ -455,33 +422,6 @@
             }
             document.querySelector('html').scrollTo(0, document.querySelector('html').scrollHeight);
         }
-        function runActive() {
-            if (currentCommand === 'calc') {
-                // Check for special conditions
-                if (commandLine === 'Round') {
-                    ans = Math.round(ans);
-                } else { ans = eval(commandLine); }
-
-                //Output
-                output.innerHTML = ans;
-                commandLine = '';
-                commandInput.innerHTML = '';
-            } else if (currentCommand === 'AItest') {
-                askAI(commandLine);
-                commandLine = '';
-                commandInput.innerHTML = '';
-            }
-        }
-        document.addEventListener('keydown', function(event) {
-            if (event.ctrlKey && event.key === 'x') {
-                event.preventDefault();
-                activeCommand.innerHTML = '';
-                currentCommand = '';
-                currentInput = '';
-                commandInput.innerHTML = '';
-                commandLine = '';
-            }
-        });
         function newLine() {
             const newParagraph = document.createElement('p');
             const oldText = output.innerHTML;
