@@ -88,13 +88,14 @@
     <p id="commandInputArea"><span id="beginInput"></span><span id="activeCommand"></span><span id="commandInput"></span><span id="indicator">E</span></p>
     <div id="cmdStyle"></div>
     <script>
-        const version = '1.1.1';
+        const version = '1.2-beta1';
 
         let commandLine = '';
         let commandRequest;
         let ans;
         let usrname = 'sysUser';
         let currentInput = '';
+        let previousAns;
 
         let pastCommands = [];
         let pastRequests = -1;
@@ -132,8 +133,6 @@
         const toptext = document.getElementById('toptext');
         versionOutput.innerHTML = version;
         
-        const OPENAI_API_KEY = "llmgtwy_76EO0WkmXufRRFC6fKdmr1ilBulBb1YIFWGdaRGv";
-        
         document.addEventListener('keydown', function(event) {
             const excludedKeys = ['Tab', 'Control', 'Shift', 'Alt', 'Backspace', 'Enter', 'Meta', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12'  ];
 
@@ -162,22 +161,6 @@
                 runCommand();
             }
         });
-        
-        /*document.addEventListener('click', function(event) {
-            const x = event.cleintX;
-            const y = event.clientY;
-
-            const targetID = event.target.id;
-            const targetClass = event.target.className;
-
-            if (targetClass !== 'newOutput') {
-                cmdStyle.style.top = event.clientY - 15 + 'px';
-                cmdStyle.style.left = event.clientX - 8 + 'px';
-                cmdStyle.style.display = 'block';
-            } else if (event.target.id === 'cmdStyle') {
-                cmdStyle.style.display = 'none';
-            }
-        });*/
 
         document.addEventListener('keydown', function(event) {
             if (event.key === 'ArrowUp') {
@@ -198,7 +181,7 @@
                 }
             } else if (event.key === 'Tab') {
                 event.preventDefault();
-                const availableCommands = ['calc', 'usrname', 'whoami', 'txt', 'AItest', 'help', 'sysinfo', 'dnt', 'color', 'theme', 'themes', 'deltheme', 'savetheme', 'resetcolor', 'reset', 'showtime', 'version', 'about'];
+                const availableCommands = ['calc', 'usrname', 'whoami', 'txt', 'help', 'sysinfo', 'dnt', 'color', 'theme', 'themes', 'deltheme', 'savetheme', 'resetcolor', 'reset', 'showtime', 'version', 'about'];
                 const matchingCommands = availableCommands.filter(cmd => cmd.startsWith(commandLine));
                 if (matchingCommands.length > 0) {
                     commandLine = matchingCommands[0];
@@ -232,10 +215,33 @@
                     } else {
                         ans = eval(commandOptions.join(' '));
                         output.innerHTML = ans;
+                        previousAns = ans;
                     }
-                    /*currentInput = activeInput;
-                    activeCommand.innerHTML = commandLine + currentInput;
-                    currentCommand = 'calc';*/
+                    break;
+                case '+':
+                    ans = previousAns + eval(commandOptions.join(' '));
+                    output.innerHTML = ans;
+                    previousAns = ans;
+                    break;
+                case '-':
+                    ans = previousAns - eval(commandOptions.join(' '));
+                    output.innerHTML = ans;
+                    previousAns = ans;
+                    break;
+                case '*':
+                    ans = previousAns * eval(commandOptions.join(' '));
+                    output.innerHTML = ans;
+                    previousAns = ans;
+                    break;
+                case '/':
+                    ans = previousAns / eval(commandOptions.join(' '));
+                    output.innerHTML = ans;
+                    previousAns = ans;
+                    break;
+                case 'round':
+                    ans = Math.round(previousAns);
+                    output.innerHTML = ans;
+                    previousAns = ans;
                     break;
                 case 'usrname':
                     if (!commandOptions[0]) {
@@ -260,9 +266,6 @@
                         output.innerHTML = commandOptions.join(' ');
                     }
                     break;
-                case 'AItest':
-                    output.innerHTML = 'AI features will come in later updates';
-                    break;
                 case 'help':
                     const helpCommands = [
                         { name: 'calc', desc: 'Perform calculations' },
@@ -281,8 +284,7 @@
                         { name: 'about', desc: 'Learn about this program' },
                         { name: 'savetheme [theme name]', desc: 'Save the current color scheme as a new theme' },
                         { name: 'deltheme [theme name]', desc: 'Delete a custom saved theme' },
-                        { name: 'themes', desc: 'List all preset and custom themes' },
-                        { name: 'AItest', desc: 'Test out AI features (coming soon)' }
+                        { name: 'themes', desc: 'List all preset and custom themes' }
                     ];
                     
                     if (commandOptions[0]) {
@@ -410,8 +412,6 @@
                 case 'about':
                     output.innerHTML = 'CLI is a web-based command line interface. It is currently in early development and is made for fun and to practice programming.';
                     break;
-                /*default:
-                    if (commandLine !== '') output.innerHTML = error;*/
             }
 
             // OUTPUT
@@ -488,40 +488,6 @@
                 resetColor();
                 html.style.fontFamily = 'Courier Prime', sans-serif;
             }, 500);
-        }
-        function askAI(commandLine) {
-            output.innerHTML = 'Asking EthaNet...';
-            
-            fetch('https://api.openai.com/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${OPENAI_API_KEY}`
-                },
-                body: JSON.stringify({
-                    model: 'gpt-4',
-                    messages: [{
-                        role: 'user',
-                        content: commandLine
-                    }],
-                    max_tokens: 500
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.choices && data.choices[0]) {
-                    output.innerHTML = data.choices[0].message.content;
-                } else if (data.error) {
-                    output.innerHTML = 'Error: ' + data.error.message;
-                } else {
-                    output.innerHTML = 'Error: Unexpected response from API';
-                }
-                newLine();
-            })
-            .catch(error => {
-                output.innerHTML = 'Error: ' + error.message;
-                newLine();
-            });
         }
 
         function startup() {
