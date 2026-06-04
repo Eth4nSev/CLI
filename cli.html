@@ -29,7 +29,7 @@
             bottom: 0px;
             left: 0px;
             text-align: left;
-            font-size: 24px;
+            font-size: 20px;
             padding: 5px 10px;
             margin: 0;
             background-color: rgba(0,0,0);
@@ -49,7 +49,7 @@
             display: inline-block;
             top: 0px;
             text-align: left;
-            font-size: 24px;
+            font-size: 20px;
             padding: 2px;
             border: none;
             width: 90%;
@@ -88,7 +88,7 @@
     <p id="commandInputArea"><span id="beginInput"></span><span id="activeCommand"></span><span id="commandInput"></span><span id="indicator">E</span></p>
     <div id="cmdStyle"></div>
     <script>
-        const version = '1.2-beta1';
+        const version = '1.2-beta2';
 
         let commandLine = '';
         let commandRequest;
@@ -284,7 +284,8 @@
                         { name: 'about', desc: 'Learn about this program' },
                         { name: 'savetheme [theme name]', desc: 'Save the current color scheme as a new theme' },
                         { name: 'deltheme [theme name]', desc: 'Delete a custom saved theme' },
-                        { name: 'themes', desc: 'List all preset and custom themes' }
+                        { name: 'themes', desc: 'List all preset and custom themes' },
+                        { name: '+, -, *, /, round', desc: 'Perform calculations using the previous answer' }
                     ];
                     
                     if (commandOptions[0]) {
